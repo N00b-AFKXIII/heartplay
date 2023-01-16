@@ -47,11 +47,94 @@
           transform: scale(1.9);
         }
       }
+	  
+
+	/* Add the exploding animation */
+	.explode {
+	  animation: explode 1s ease-in-out;
+	}
+
+	/* Position and style for smaller hearts */
+	.smaller-heart {
+	  position: absolute;
+	  font-size: 40px;
+	}
+
+	@keyframes explode {
+	  0% {
+		transform: scale(1);
+	  }
+	  25% {
+		transform: scale(1.5);
+	  }
+	  50% {
+		transform: scale(0);
+		display: none;
+	  }
+	}
     </style>
   </head>
-  <body>
-    <div class="heart animated">
-      <i class="fa-solid fa-heart"></i>
-    </div>
-  </body>
+<body>
+
+  <div class="heart animated" id="heart">
+    <i class="fa-solid fa-heart"></i>
+  </div>
+  <script>
+    let heart = document.getElementById("heart");
+    let timeoutId;
+
+    heart.addEventListener("mouseover", function() {
+      timeoutId = setTimeout(explodeHeart, 2000);
+      heart.style.animation = "heartbeat 0.5s ease-in-out infinite";
+    });
+
+    heart.addEventListener("mouseout", function() {
+      clearTimeout(timeoutId);
+      heart.style.animation = "heartbeat 1s ease-in-out infinite";
+    });
+	
+    function explodeHeart() {
+	
+		heart.style.display = "none";
+      heart.classList.add("explode");
+
+      // Create 10 smaller hearts
+      for (let i = 0; i < 100; i++) {
+        let smallerHeart = document.createElement("i");
+        smallerHeart.classList.add("fa-solid", "fa-heart", "smaller-heart");
+		// set random color
+        let color = getRandomColor();
+        smallerHeart.style.color = color;
+        document.body.appendChild(smallerHeart);
+      }
+      // Position the smaller hearts randomly
+      let smallerHearts = document.querySelectorAll(".smaller-heart");
+      smallerHearts.forEach(heart => {
+        let x = Math.floor(Math.random() * window.innerWidth);
+        let y = Math.floor(Math.random() * window.innerHeight);
+        heart.style.left = x + "px";
+        heart.style.top = y + "px";
+      });
+      
+      // Remove the smaller hearts after 10 seconds
+      setTimeout(() => {
+        smallerHearts.forEach(heart => {
+          heart.remove();
+        });
+        // Show the original heart again
+        heart.style.display = "block";
+      }, 10000);
+    }
+	
+	
+	function getRandomColor() {
+    let letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+  </script>
+</body>
 </html>
